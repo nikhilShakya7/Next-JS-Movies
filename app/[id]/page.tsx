@@ -1,7 +1,18 @@
-import React from "react";
-import Link from "next/link";
+"use client";
+import { useParams, useRouter } from "next/navigation";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-const Home = () => {
+interface MovieProps {
+  params: {
+    id: string;
+  };
+}
+
+const MoviePage = () => {
+  const params = useParams();
+  const id = params.id;
+  const router = useRouter();
+
   const movies: any[] = [
     {
       id: "1",
@@ -355,103 +366,114 @@ const Home = () => {
     },
   ];
 
-  const totalMovies = movies.length;
-  const tolalComments = movies.reduce((sum, movie) => sum + movie.comments, 0);
-  const averageRating = (
-    movies.reduce((sum, movie) => sum + movie.rating, 0) / totalMovies
-  ).toFixed(1);
+  const movie = movies.find((m) => m.id === id);
+
+  if (!movie) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4">
+        <div className="bg-gray-800 p-8 rounded-xl shadow-2xl border border-gray-700 text-center max-w-md w-full">
+          <h1 className="text-3xl font-bold text-white mb-4">
+            Movie Not Found
+          </h1>
+          <p className="text-gray-300 mb-6">
+            The movie you're looking for doesn't exist in our database.
+          </p>
+          <button
+            onClick={() => router.back()}
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold mb-8 text-center text-gray-800 hover:text-blue-600 transition-colors duration-300">
-          Dashboard Overview
-        </h2>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Back Button */}
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+        >
+          <ArrowLeftIcon className="h-5 w-5" />
+          <span>Back to movies</span>
+        </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Total Movies Card */}
-          <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-            <p className="text-gray-600 text-lg font-medium mb-2 hover:text-blue-600 transition-colors duration-300">
-              Total Movies
-            </p>
-            <p className="text-3xl font-bold text-blue-600 hover:text-blue-700 transition-colors duration-300">
-              {totalMovies}
-            </p>
+        {/* Movie Card */}
+        <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200">
+          {/* Movie Header with Gradient */}
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 md:p-8 text-white relative">
+            <div className="absolute top-4 right-4 bg-white  bg-opacity-20 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-medium text-black">
+              ID: {movie.id}
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold">{movie.title}</h1>
+            <div className="flex flex-wrap items-center gap-4 mt-4">
+              <span className="inline-flex items-center px-4 py-1 rounded-full bg-white bg-opacity-20 text-sm text-black font-medium backdrop-blur-sm">
+                ⭐ {movie.rating} Rating
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <span className="text-white/80">💬</span>
+                {movie.comments} comments
+              </span>
+            </div>
           </div>
 
-          {/* Total Comments Card */}
-          <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-            <p className="text-gray-600 text-lg font-medium mb-2 hover:text-green-600 transition-colors duration-300">
-              Total Comments
-            </p>
-            <p className="text-3xl font-bold text-green-600 hover:text-green-700 transition-colors duration-300">
-              {tolalComments}
-            </p>
-          </div>
+          {/* Movie Content */}
+          <div className="p-6 md:p-8">
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* Left Column - Description */}
+              <div className="md:col-span-2">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                  About the Movie
+                </h2>
+                <p className="text-gray-600 leading-relaxed">
+                  {movie.description}
+                </p>
+              </div>
 
-          {/* Average Ratings Card */}
-          <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-            <p className="text-gray-600 text-lg font-medium mb-2 hover:text-yellow-600 transition-colors duration-300">
-              Average Rating
-            </p>
-            <p className="text-3xl font-bold text-green-600 hover:text-yellow-700 transition-colors duration-300">
-              {averageRating}
-            </p>
-          </div>
-        </div>
-
-        {/* Movie List Table */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-          <h3 className="text-xl font-semibold p-4 border-b border-gray-200 text-gray-700 hover:text-blue-600 transition-colors duration-300">
-            Recent Movies
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors duration-300">
-                    Title
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors duration-300">
-                    Rating
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors duration-300">
-                    Comments
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors duration-300">
-                    Description
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {movies.map((movie) => (
-                  <tr
-                    key={movie.id}
-                    className="hover:bg-gray-50 transition-colors duration-200"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      <Link
-                        href={`${movie.id}`}
-                        className="hover:text-blue-600 hover:underline transition-colors duration-300"
-                      >
-                        {movie.title}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-yellow-200 transition-colors duration-300">
-                        {movie.rating}
+              {/* Right Column - Details */}
+              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                <h3 className="text-lg font-medium text-gray-800 mb-4">
+                  Movie Details
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-gray-500 font-medium">Rating</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div
+                          className="bg-yellow-500 h-2.5 rounded-full"
+                          style={{ width: `${(movie.rating / 5) * 100}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-gray-700 font-medium">
+                        {movie.rating}/5.0
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hover:text-gray-700 transition-colors duration-300">
-                      {movie.comments}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 hover:text-gray-700 transition-colors duration-300">
-                      {movie.description}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-sm text-gray-500 font-medium">
+                      Comments
+                    </p>
+                    <p className="text-gray-700 font-medium mt-1">
+                      {movie.comments.toLocaleString()}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t border-gray-200">
+                    <button className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
+                      Add to Watchlist
+                    </button>
+                    <button className="w-full py-2 mt-2 border border-indigo-600 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                      Write a Review
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -459,4 +481,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default MoviePage;
