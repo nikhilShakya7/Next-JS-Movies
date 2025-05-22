@@ -384,7 +384,7 @@ const Home = () => {
             <p className="text-gray-600 text-lg font-medium mb-2 hover:text-green-600 transition-colors duration-300">
               Total Comments
             </p>
-            <p className="text-3xl font-bold text-green-600 hover:text-green-700 transition-colors duration-300">
+            <p className="text-3xl font-bold text-yellow-500 hover:text-green-700 transition-colors duration-300">
               {tolalComments}
             </p>
           </div>
