@@ -1,8 +1,16 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import Link from "next/link";
+interface Movie {
+  id: string;
+  title: string;
+  rating: number;
+  comments: number;
+  description: string;
+}
 
 const Home = () => {
-  const movies: any[] = [
+  const movies: Movie[] = [
     {
       id: "1",
       title: "Inception",
@@ -355,18 +363,54 @@ const Home = () => {
     },
   ];
 
-  const totalMovies = movies.length;
-  const tolalComments = movies.reduce((sum, movie) => sum + movie.comments, 0);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredMovies = movies.filter((movie) =>
+    movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalMovies = filteredMovies.length;
+  const tolalComments = filteredMovies.reduce(
+    (sum, movie) => sum + movie.comments,
+    0
+  );
   const averageRating = (
-    movies.reduce((sum, movie) => sum + movie.rating, 0) / totalMovies
+    filteredMovies.reduce((sum, movie) => sum + movie.rating, 0) /
+    (totalMovies || 1)
   ).toFixed(1);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold mb-8 text-center text-gray-800 hover:text-blue-600 transition-colors duration-300">
+        <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">
           Dashboard Overview
         </h2>
+
+        {/* Search Bar */}
+        <div className="mb-8">
+          <div className="relative max-w-md mx-auto">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg
+                className="h-5 w-5 text-gray-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <input
+              type="text"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
+              placeholder="Search movies..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Total Movies Card */}
@@ -402,9 +446,19 @@ const Home = () => {
 
         {/* Movie List Table */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-          <h3 className="text-xl font-semibold p-4 border-b border-gray-200 text-gray-700 hover:text-blue-600 transition-colors duration-300">
-            Recent Movies
-          </h3>
+          <div className="flex justify-between items-center p-4 border-b border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-300">
+              {searchTerm ? "Search Results" : "Recent Movies"}
+            </h3>
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="text-sm text-blue-600 hover:text-blue-500 transition-colors duration-300 hover:cursor-pointer"
+              >
+                Clear search
+              </button>
+            )}
+          </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -424,32 +478,43 @@ const Home = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {movies.map((movie) => (
-                  <tr
-                    key={movie.id}
-                    className="hover:bg-gray-50 transition-colors duration-200"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      <Link
-                        href={`${movie.id}`}
-                        className="hover:text-blue-600 hover:underline transition-colors duration-300"
-                      >
-                        {movie.title}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-yellow-200 transition-colors duration-300">
-                        {movie.rating}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hover:text-gray-700 transition-colors duration-300">
-                      {movie.comments}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 hover:text-gray-700 transition-colors duration-300">
-                      {movie.description}
+                {filteredMovies.length > 0 ? (
+                  filteredMovies.map((movie) => (
+                    <tr
+                      key={movie.id}
+                      className="hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <Link
+                          href={`${movie.id}`}
+                          className="hover:text-blue-600 hover:underline transition-colors duration-300"
+                        >
+                          {movie.title}
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-yellow-200 transition-colors duration-300">
+                          {movie.rating}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hover:text-gray-700 transition-colors duration-300">
+                        {movie.comments}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500 hover:text-gray-700 transition-colors duration-300">
+                        {movie.description}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={4}
+                      className="px-6 py-4 text-center text-sm text-gray-500"
+                    >
+                      No movies found matching your search.
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
