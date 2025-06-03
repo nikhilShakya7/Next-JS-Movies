@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+
 interface Movie {
   id: string;
   title: string;
@@ -370,7 +371,7 @@ const Home = () => {
   );
 
   const totalMovies = filteredMovies.length;
-  const tolalComments = filteredMovies.reduce(
+  const totalComments = filteredMovies.reduce(
     (sum, movie) => sum + movie.comments,
     0
   );
@@ -380,14 +381,14 @@ const Home = () => {
   ).toFixed(1);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold mb-8 text-center text-gray-800">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800">
           Dashboard Overview
         </h2>
 
         {/* Search Bar */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="relative max-w-md mx-auto">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg
@@ -412,42 +413,43 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* Stats Cards - Stack on mobile, row on desktop */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Total Movies Card */}
-          <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-            <p className="text-gray-600 text-lg font-medium mb-2 hover:text-blue-600 transition-colors duration-300">
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 flex flex-col items-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+            <p className="text-gray-600 text-base sm:text-lg font-medium mb-2 hover:text-blue-600 transition-colors duration-300">
               Total Movies
             </p>
-            <p className="text-3xl font-bold text-blue-600 hover:text-blue-700 transition-colors duration-300">
+            <p className="text-2xl sm:text-3xl font-bold text-blue-600 hover:text-blue-700 transition-colors duration-300">
               {totalMovies}
             </p>
           </div>
 
           {/* Total Comments Card */}
-          <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-            <p className="text-gray-600 text-lg font-medium mb-2 hover:text-green-600 transition-colors duration-300">
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 flex flex-col items-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+            <p className="text-gray-600 text-base sm:text-lg font-medium mb-2 hover:text-green-600 transition-colors duration-300">
               Total Comments
             </p>
-            <p className="text-3xl font-bold text-yellow-500 hover:text-green-700 transition-colors duration-300">
-              {tolalComments}
+            <p className="text-2xl sm:text-3xl font-bold text-yellow-500 hover:text-green-700 transition-colors duration-300">
+              {totalComments}
             </p>
           </div>
 
           {/* Average Ratings Card */}
-          <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-            <p className="text-gray-600 text-lg font-medium mb-2 hover:text-yellow-600 transition-colors duration-300">
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 flex flex-col items-center hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+            <p className="text-gray-600 text-base sm:text-lg font-medium mb-2 hover:text-yellow-600 transition-colors duration-300">
               Average Rating
             </p>
-            <p className="text-3xl font-bold text-green-600 hover:text-yellow-700 transition-colors duration-300">
+            <p className="text-2xl sm:text-3xl font-bold text-green-600 hover:text-yellow-700 transition-colors duration-300">
               {averageRating}
             </p>
           </div>
         </div>
 
-        {/* Movie List Table */}
+        {/* Movie List - Card layout on mobile, table on desktop */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-          <div className="flex justify-between items-center p-4 border-b border-gray-200">
-            <h3 className="text-xl font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-300">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 sm:p-4 border-b border-gray-200">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-300 mb-2 sm:mb-0">
               {searchTerm ? "Search Results" : "Recent Movies"}
             </h3>
             {searchTerm && (
@@ -459,20 +461,57 @@ const Home = () => {
               </button>
             )}
           </div>
-          <div className="overflow-x-auto">
+
+          {/* Mobile Card View */}
+          <div className="sm:hidden">
+            {filteredMovies.length > 0 ? (
+              <div className="divide-y divide-gray-200">
+                {filteredMovies.map((movie) => (
+                  <div
+                    key={movie.id}
+                    className="p-4 hover:bg-gray-50 transition-colors duration-200"
+                  >
+                    <Link href={`${movie.id}`} className="block">
+                      <h4 className="text-base font-medium text-gray-900 hover:text-blue-600 hover:underline transition-colors duration-300">
+                        {movie.title}
+                      </h4>
+                      <div className="mt-2 flex items-center space-x-4">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          {movie.rating}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {movie.comments} comments
+                        </span>
+                      </div>
+                      <p className="mt-2 text-sm text-gray-500 line-clamp-2">
+                        {movie.description}
+                      </p>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 text-center text-sm text-gray-500">
+                No movies found matching your search.
+              </div>
+            )}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors duration-300">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Title
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors duration-300">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Rating
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors duration-300">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Comments
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-gray-700 transition-colors duration-300">
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Description
                   </th>
                 </tr>
@@ -484,7 +523,7 @@ const Home = () => {
                       key={movie.id}
                       className="hover:bg-gray-50 transition-colors duration-200"
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         <Link
                           href={`${movie.id}`}
                           className="hover:text-blue-600 hover:underline transition-colors duration-300"
@@ -492,15 +531,15 @@ const Home = () => {
                           {movie.title}
                         </Link>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-yellow-200 transition-colors duration-300">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                           {movie.rating}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hover:text-gray-700 transition-colors duration-300">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {movie.comments}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500 hover:text-gray-700 transition-colors duration-300">
+                      <td className="px-4 sm:px-6 py-4 text-sm text-gray-500 line-clamp-2">
                         {movie.description}
                       </td>
                     </tr>
@@ -509,7 +548,7 @@ const Home = () => {
                   <tr>
                     <td
                       colSpan={4}
-                      className="px-6 py-4 text-center text-sm text-gray-500"
+                      className="px-4 sm:px-6 py-4 text-center text-sm text-gray-500"
                     >
                       No movies found matching your search.
                     </td>
